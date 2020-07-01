@@ -28,7 +28,8 @@ export default class Main extends Component {
         selectedUser: selectUserDate,
         id: selectUserDate.id,
         posts: postDate,
-        newPost: ''
+        newPost: '',
+        disabled: true
       };
       console.log("state",this.state);
     }
@@ -38,7 +39,8 @@ export default class Main extends Component {
         selectedUser: setUserList[0],
         id: 0,
         posts: [],
-        newPost: ''
+        newPost: '',
+        disabled: true
       };
       localStorage.setItem('flag',JSON.stringify(true))
       localStorage.setItem('post',JSON.stringify([]))
@@ -48,9 +50,19 @@ export default class Main extends Component {
   }
   // 入力値関数
   onInput = (e) => {
-    this.setState({
-      newPost: e.target.value
-    });
+    const word = e.target.value
+    console.log(word.length)
+    if(word.length>= 5){
+      this.setState({
+        newPost: e.target.value,
+        disabled: false
+      });
+    }
+    else{
+      this.setState({
+        disabled: true
+      });
+    }
   }
   // 追加関数
   addTodo = () => {
@@ -107,17 +119,16 @@ export default class Main extends Component {
     <div>
     <h1>称賛アプリ</h1>
       <div>
-        <img src={selectedUser.image}></img>
+        <img src={selectedUser.image} alt="user"></img>
         <select size="1" value={this.state.id} onChange={ (e)=>{ this.selectUser(e)} }>{userItmes}</select>
         <p>名前{selectedUser.name}</p>
         <p>拍手できるポイント:{selectedUser.applausePoint}</p>
         <p>拍手されたポイント:{selectedUser.applaudedPoint}</p>
-        
       </div>
-      <div>
-        <input type="text" onInput={this.onInput} />
-        <button onClick={this.addTodo} >登録</button>
-      </div>
+      <form>
+        <textarea type="text" onInput={this.onInput} ></textarea>
+        <button onClick={this.addTodo} disabled={this.state.disabled}>登録</button>
+      </form>
       <ul>
         {posts.map((post, index) => <li key={index}>
           {post}
