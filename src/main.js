@@ -14,39 +14,63 @@ export default class Main extends Component {
     var flag = JSON.parse(jsonFlag);
 
     // ローカルのデータを取得
+    var userListDate = JSON.parse(localStorage.getItem('userList'));// 投稿
     var postDate = JSON.parse(localStorage.getItem('post'));// 投稿
     var selectUserDate= JSON.parse(localStorage.getItem('selectUser'));//セレクトユーザー
+    var sendToUserDate= JSON.parse(localStorage.getItem('sendToUser'));//送信先ユーザー
+    console.log("userListDate","postDate","selectUserDate",userListDate,postDate,selectUserDate);
 
-    // オブジェクト情報を取得
+    // ユーザーデーター取得
     var setUserList = Object.keys(users).map(key => users[key]);
-    console.log("post","selectuser","flag",postDate, selectUserDate,flag)
 
     // 初期データの時とそれ以外で判定
     if(flag === true){
+
+      var setSendUserList = []
+      Object.assign(setSendUserList , setUserList);
+      setSendUserList.splice([selectUserDate.id],1)
+      console.log("sendUserList2",setSendUserList)
+
       this.state = {
         userList: setUserList,
         selectedUser: selectUserDate,
         id: selectUserDate.id,
         posts: postDate,
         newPost: '',
-        disabled: true
+        disabled: true,
+        sendUserList: setSendUserList,
+        sendId: sendToUserDate.id,
+        sendToUser: sendToUserDate,
+        sendFromUser: selectUserDate,
       };
       console.log("state",this.state);
     }
     else{
+      // オブジェクト情報を取得
+
+      var setSendUserList = []
+      Object.assign(setSendUserList , setUserList);
+      setSendUserList.splice([0],1)
+      console.log("sendUserList1",setSendUserList)
+
       this.state = {
         userList: setUserList,
         selectedUser: setUserList[0],
         id: 0,
         posts: [],
         newPost: '',
-        disabled: true
+        disabled: true,
+        sendUserList: setSendUserList,
+        sendId: 1,
+        sendToUser: setUserList[1],
+        sendFromUser: setUserList[0],
       };
+      localStorage.setItem('userList',JSON.stringify(setUserList))
       localStorage.setItem('flag',JSON.stringify(true))
       localStorage.setItem('post',JSON.stringify([]))
       localStorage.setItem('selectUser',JSON.stringify(setUserList[0]))
+      localStorage.setItem('sendToUser',JSON.stringify(setUserList[1]))
     }
-    //console.log("date",tododate)
   }
   // 入力値関数
   onInput = (e) => {
@@ -91,24 +115,51 @@ export default class Main extends Component {
   
   // ユーザー選択
   selectUser(event){
+    const setUserList = this.state.userList
     const updateuser = this.state.userList
     const id = event.target.value
     console.log('id',id);
     
+    var setSendUserList = []
+    Object.assign(setSendUserList, setUserList);
+    console.log("test",setUserList)
+    setSendUserList.splice([id],1)
+
     //updateuser[id].point = updateuser[id].point + 10
     this.setState({
       selectedUser: updateuser[id],
-      id: id
+      id: id,
+      sendUserList: setSendUserList,
+      sendToUser: setSendUserList[0],
+      sendId: setSendUserList[0].id
     });
     //ローカルに保存
     localStorage.setItem('selectUser',JSON.stringify(updateuser[id]))
+    localStorage.setItem('sendToUser',JSON.stringify(updateuser[setSendUserList[0].id]))
+  }
+
+  selectSendToUser(event){
+    const updateSentToUser = this.state.userList
+    const id = event.target.value
+    console.log('id',id);
+    this.setState({
+      sendToUser: updateSentToUser[id],
+      sendId: id
+    });
+    localStorage.setItem('sendToUser',JSON.stringify(updateSentToUser[id]))
   }
 
   //htmlに反映
   render() {
-    const { posts,userList,selectedUser } = this.state;
+    const { posts,userList,sendUserList,selectedUser,sendToUser } = this.state;
 
     const userItmes = userList.map((user) =>
+      <option key={user.id} value={user.id}>
+        {user.name}
+      </option>
+    );
+
+    const sendUserItmes = sendUserList.map((user) =>
       <option key={user.id} value={user.id}>
         {user.name}
       </option>
@@ -126,6 +177,8 @@ export default class Main extends Component {
         <p>拍手されたポイント:{selectedUser.applaudedPoint}</p>
       </div>
       <form>
+        <img src={sendToUser.image} alt="ch"></img>
+        <select size="1" value={this.state.sendId} onChange={ (e)=>{ this.selectSendToUser(e)} }>{sendUserItmes}</select>
         <textarea type="text" onInput={this.onInput} ></textarea>
         <button onClick={this.addTodo} disabled={this.state.disabled}>登録</button>
       </form>

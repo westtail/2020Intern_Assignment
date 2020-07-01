@@ -25,7 +25,7 @@ const users = {
         applausePoint: 300,
         applaudedPoint: 300,
         image: image_3
-    }
+    },
 }
 
 // 他の場所で読み込めるようにする
