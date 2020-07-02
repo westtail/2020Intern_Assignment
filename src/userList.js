@@ -7,7 +7,7 @@ const users = {
         id: 0,
         name: "伸近エリ",
         applausePoint: 100,
-        applaudedPoint: 100,
+        applaudedPoint: 0,
         image: image_1
     },
   
@@ -15,7 +15,7 @@ const users = {
         id: 1,
         name: "仲間由紀恵",
         applausePoint: 200,
-        applaudedPoint: 200,
+        applaudedPoint: 0,
         image: image_2
     },
   
@@ -23,7 +23,7 @@ const users = {
         id: 2,
         name: "阿部寛",
         applausePoint: 300,
-        applaudedPoint: 300,
+        applaudedPoint: 0,
         image: image_3
     },
 }
