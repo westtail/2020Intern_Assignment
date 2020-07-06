@@ -1,0 +1,17 @@
+.main{
+    text-align:center;
+}
+.userImage{
+    display: inline-block;
+}
+.userParameter{
+    display: inline-block;
+
+}
+
+.sendUserImagee {
+    display: inline-block;
+}
+.inputPostForm {
+    display: inline-block;
+}

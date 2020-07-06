@@ -179,27 +179,48 @@ export default class Main extends Component {
 
     //html表示部分
     return (
-    <div>
-    <h1>称賛アプリ</h1>
+    <div className = "main">
       <div>
-        <img src={selectedUser.image} alt="user"></img>
-        <select size="1" value={this.state.selectedId} onChange={ (e)=>{ this.selectUser(e)} }>{userItmes}</select>
-        <p>名前{selectedUser.name}</p>
-        <p>拍手できるポイント:{selectedUser.applausePoint}</p>
-        <p>拍手されたポイント:{selectedUser.applaudedPoint}</p>
+        <h1>称賛アプリ</h1>
       </div>
-      <form>
-        <img src={sendToUser.image} alt="ch"></img>
-        <select size="1" value={this.state.sendId} onChange={ (e)=>{ this.selectSendToUser(e)} }>{sendUserItmes}</select>
-        <textarea type="text" onInput={this.onInput} ></textarea>
-        <button onClick={this.addPost} disabled={this.state.disabled}>登録</button>
-      </form>
-      <ul>
-        {postList.map((post, index) => <li key={index}>
-          投稿内容{post.post}-送信元{post.sender.name}-送信先{post.receiver.name}-日時{post.postTime}-拍手ポイント{post.applause}
-          <button onClick={() => { this.addApplause(index) }}>拍手</button>
-        </li>)}
-      </ul>
+
+      <div className = "user">
+        <div className= "userImage">
+          <img src={selectedUser.image} alt="user"></img>
+          <div className= "chengeUser ">
+            <select size="1" value={this.state.selectedId} onChange={ (e)=>{ this.selectUser(e)} }>{userItmes}</select>
+          </div>
+        </div>
+        <div className= "userParameter">
+          <p>名前{selectedUser.name}</p>
+          <p>拍手できるポイント:{selectedUser.applausePoint}</p>
+          <p>拍手されたポイント:{selectedUser.applaudedPoint}</p>
+        </div>
+      </div>
+
+      <div className = "sendUser">
+        <div className = "sendUserImage">
+          <img src={sendToUser.image} alt="ch"></img>
+          <div className = "chengeSendUser">
+            <select size="1" value={this.state.sendId} onChange={ (e)=>{ this.selectSendToUser(e)} }>{sendUserItmes}</select>
+          </div>
+        </div>
+        <div className = "inputPostForm">
+          <form>
+            <textarea type="text" onInput={this.onInput} ></textarea>
+            <button onClick={this.addPost} disabled={this.state.disabled}>登録</button>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        <ul>
+          {postList.map((post, index) => <li key={index}>
+            投稿内容{post.post}-送信元{post.sender.name}-送信先{post.receiver.name}-日時{post.postTime}-拍手ポイント{post.applause}
+            <button onClick={() => { this.addApplause(index) }}>拍手</button>
+          </li>)}
+        </ul>
+      </div>
     </div>);
   }
 }
