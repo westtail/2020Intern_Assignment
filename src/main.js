@@ -18,8 +18,6 @@ export default class Main extends Component {
     var postListDate = JSON.parse(localStorage.getItem('postList'));// 投稿
     var selectUserDate= JSON.parse(localStorage.getItem('selectUser'));//セレクトユーザー
     var sendToUserDate= JSON.parse(localStorage.getItem('sendToUser'));//送信先ユーザー
-    console.log("userListDate","postListDate","selectUserDate",userListDate,postListDate,selectUserDate);
-
 
     //２回目以降のデータ初期化
     if(flag === true){
@@ -30,7 +28,7 @@ export default class Main extends Component {
       setSendUserList.splice([selectUserDate.id],1)
 
       this.state = {
-        userList: setUserList,
+        userList: userListDate,
         selectedUser: selectUserDate,
         selectedId: selectUserDate.id,
         postList: postListDate,
@@ -40,15 +38,14 @@ export default class Main extends Component {
         sendId: sendToUserDate.id,
         sendToUser: sendToUserDate,
       };
-      console.log("state",this.state);
     }
     //１回目のデータ初期化
     else{
 
       // 送信先ユーザーリストを作成
-      var setSendUserList = []
-      Object.assign(setSendUserList , setUserList);
-      setSendUserList.splice([0],1)
+      var setFirstSendUserList = []
+      Object.assign(setFirstSendUserList , setUserList);
+      setFirstSendUserList.splice([0],1)
 
       this.state = {
         userList: setUserList,
@@ -57,7 +54,7 @@ export default class Main extends Component {
         postList: [],
         newPost: '',
         disabled: true,
-        sendUserList: setSendUserList,
+        sendUserList: setFirstSendUserList,
         sendId: 1,
         sendToUser: setUserList[1],
       };
@@ -89,11 +86,10 @@ export default class Main extends Component {
   addPost = () => {
     const {newPost,selectedUser,sendToUser} = this.state
     const updatePostList = this.state.postList
-
     const postTimeStamp = moment().format('YYYY/MM/DD/hh:mm:ss')
-
+    // 投稿情報をオブジェクトとして保存
     const newPostList = {post: newPost, sender: selectedUser, receiver: sendToUser, postTime: postTimeStamp,
-      applause: 0}
+      applause: 0, applauseDisabled: true}
     console.log("newPostList",newPostList)
     updatePostList.push(newPostList)
 
@@ -112,19 +108,25 @@ export default class Main extends Component {
     const receiverUser = updatePost[index].receiver
     const senderUser = updatePost[index].sender
 
-    if (selectedUser.name === senderUser.name || selectedUser.name === receiverUser.name){
+    if (selectedUser.name === senderUser.name || selectedUser.name === receiverUser.name || updateUserList[selectedUser.id].applausePoint <= 0){
 
     }
     else{
-      updatePost[index].applause = updatePost[index].applause + 1
-      updateUserList[selectedUser.id].applausePoint = updateUserList[selectedUser.id].applausePoint -2
-      updateUserList[senderUser.id].applaudedPoint = updateUserList[senderUser.id].applaudedPoint +1
-      updateUserList[receiverUser.id].applaudedPoint = updateUserList[receiverUser.id].applaudedPoint +1
+    updatePost[index].applause = updatePost[index].applause + 1
+    updateUserList[selectedUser.id].applausePoint = updateUserList[selectedUser.id].applausePoint -2
+    updateUserList[senderUser.id].applaudedPoint = updateUserList[senderUser.id].applaudedPoint +1
+    updateUserList[receiverUser.id].applaudedPoint = updateUserList[receiverUser.id].applaudedPoint +1
     }
+    if(updateUserList[selectedUser.id].applausePoint <= 0){
+      updatePost[index].applauseDisabled = true
+    }
+    
     this.setState({
+      selectedUser: updateUserList[selectedUser.id],
       postList: updatePost,
       userList: updateUserList
     });
+    localStorage.setItem('selectUser',JSON.stringify(updateUserList[selectedUser.id]))
     localStorage.setItem('postList',JSON.stringify(updatePost))
     localStorage.setItem('userList',JSON.stringify(updateUserList))
   }
@@ -133,18 +135,26 @@ export default class Main extends Component {
   selectUser(event){
     const userList = this.state.userList
     const selectId = event.target.value
+    const checkList = this.state.postList
     // 送信先ユーザーのアップデート
     var updateSendUserList = []
     Object.assign(updateSendUserList, userList);
     updateSendUserList.splice([selectId],1)
 
-    
+    Object.keys(checkList).map(key => {
+      if(userList[selectId].name === checkList[key].sender.name || userList[selectId].name === checkList[key].receiver.name || userList[selectId].applausePoint <= 0){
+        checkList[key].applauseDisabled = true
+      }
+      else{
+        checkList[key].applauseDisabled = false
+      }})
     this.setState({
       selectedUser: userList[selectId],
       selectedId: selectId,
       sendUserList: updateSendUserList,
       sendToUser: updateSendUserList[0],
-      sendId: updateSendUserList[0].id
+      sendId: updateSendUserList[0].id,
+      postList: checkList
     });
     //ローカルに保存
     localStorage.setItem('selectUser',JSON.stringify(userList[selectId]))
@@ -217,7 +227,7 @@ export default class Main extends Component {
         <ul>
           {postList.map((post, index) => <li key={index}>
             投稿内容{post.post}-送信元{post.sender.name}-送信先{post.receiver.name}-日時{post.postTime}-拍手ポイント{post.applause}
-            <button onClick={() => { this.addApplause(index) }}>拍手</button>
+            <button onClick={() => { this.addApplause(index) }} disabled={post.applauseDisabled} >拍手</button>
           </li>)}
         </ul>
       </div>
