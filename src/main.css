@@ -1,18 +1,12 @@
 .main{
     text-align:center;
 }
-.user {
-    float: left;
-}
 .userImage{
-    float: left;
+    display: inline-block;
 }
 .userParameter{
-    float: left;
+    display: inline-block;
 
-}
-.sendUser{
-    float: left;
 }
 .sendUserImagee {
     display: inline-block;
@@ -21,10 +15,6 @@
     display: inline-block;
 }
 
-.post{
-    float: left;
-    
-}
 .postpost{
     width:150px;
     display: inline-block;

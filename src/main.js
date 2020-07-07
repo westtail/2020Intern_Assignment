@@ -202,6 +202,7 @@ export default class Main extends Component {
       </div>
 
       <div className = "user">
+      <h3>選択ユーザー</h3>
         <div className= "userImage">
           <img src={selectedUser.image} alt="user"></img>
           <div className= "chengeUser ">
@@ -215,6 +216,7 @@ export default class Main extends Component {
       </div>
 
       <div className = "sendUser">
+      <h3>投稿先ユーザーと投稿内容</h3>
         <div className = "sendUserImage">
           <img src={sendToUser.image} alt="ch"></img>
           <div className = "chengeSendUser">
@@ -230,7 +232,7 @@ export default class Main extends Component {
       </div>
 
       <div className = "post">
-      <h5>投稿</h5>
+      <h5>投稿リスト</h5>
         <ul>
           {postList.map((post, index) => <li key={index}>
             <p className = "postpost">投稿内容 : {post.post}</p>
@@ -239,9 +241,9 @@ export default class Main extends Component {
               <button data-tip={post.applause} data-for='global' onClick={() => { this.addApplause(index) }} disabled={post.applauseDisabled} >拍手</button>
             </p>
             <p className = "postdatea">
-              送信元 :  {post.sender.name}<br></br>
-              送信先 :  {post.receiver.name}<br></br>
-              日時 :  {post.postTime}<br></br>
+              紹介した人 :  {post.sender.name}<br></br>
+              紹介された人 :  {post.receiver.name}<br></br>
+              投稿日時 :  {post.postTime}<br></br>
             </p>
             <ReactTooltip id='global'  aria-haspopup = 'true' getContent={(dataTip) => `拍手してくれた人  ${dataTip}`}/>
           </li>)}
