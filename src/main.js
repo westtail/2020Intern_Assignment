@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+import ReactTooltip from 'react-tooltip'
 // ユーザー情報をインポート
 import users from './userList';
 
@@ -84,13 +85,16 @@ export default class Main extends Component {
 
   // 追加関数
   addPost = () => {
-    const {newPost,selectedUser,sendToUser} = this.state
+    const {newPost,selectedUser,sendToUser,userList} = this.state
     const updatePostList = this.state.postList
     const postTimeStamp = moment().format('YYYY/MM/DD/hh:mm:ss')
+
+    const applauseList = Object.keys(userList).map(key => [userList[key].name,0])
+
     // 投稿情報をオブジェクトとして保存
     const newPostList = {post: newPost, sender: selectedUser, receiver: sendToUser, postTime: postTimeStamp,
-      applause: 0, applauseDisabled: true}
-    console.log("newPostList",newPostList)
+      applause: applauseList,　applauseSum: 0, applauseDisabled: true}
+
     updatePostList.push(newPostList)
 
     this.setState({
@@ -108,16 +112,19 @@ export default class Main extends Component {
     const receiverUser = updatePost[index].receiver
     const senderUser = updatePost[index].sender
 
-    if (selectedUser.name === senderUser.name || selectedUser.name === receiverUser.name || updateUserList[selectedUser.id].applausePoint <= 0){
+    if (selectedUser.name === senderUser.name || selectedUser.name === receiverUser.name || updateUserList[selectedUser.id].applausePoint <= 0 || updatePost[index].applause[selectedUser.id][1] >= 15){
 
     }
     else{
-    updatePost[index].applause = updatePost[index].applause + 1
+    updatePost[index].applause[selectedUser.id][1] = updatePost[index].applause[selectedUser.id][1] + 1
     updateUserList[selectedUser.id].applausePoint = updateUserList[selectedUser.id].applausePoint -2
     updateUserList[senderUser.id].applaudedPoint = updateUserList[senderUser.id].applaudedPoint +1
     updateUserList[receiverUser.id].applaudedPoint = updateUserList[receiverUser.id].applaudedPoint +1
+    updatePost[index].applauseSum = Object.keys(updatePost[index].applause).map(key => updatePost[index].applause[key][1])
+    updatePost[index].applauseSum = updatePost[index].applauseSum.reduce(function(a, x){return a + x;})
+
     }
-    if(updateUserList[selectedUser.id].applausePoint <= 0){
+    if(updateUserList[selectedUser.id].applausePoint <= 0 || updatePost[index].applause[selectedUser.id][1] >= 15){
       updatePost[index].applauseDisabled = true
     }
     
@@ -142,7 +149,7 @@ export default class Main extends Component {
     updateSendUserList.splice([selectId],1)
 
     Object.keys(checkList).map(key => {
-      if(userList[selectId].name === checkList[key].sender.name || userList[selectId].name === checkList[key].receiver.name || userList[selectId].applausePoint <= 0){
+      if(userList[selectId].name === checkList[key].sender.name || userList[selectId].name === checkList[key].receiver.name || userList[selectId].applausePoint <= 0 || checkList[key].applause[selectId][1] >= 15){
         checkList[key].applauseDisabled = true
       }
       else{
@@ -202,7 +209,6 @@ export default class Main extends Component {
           </div>
         </div>
         <div className= "userParameter">
-          <p>名前{selectedUser.name}</p>
           <p>拍手できるポイント:{selectedUser.applausePoint}</p>
           <p>拍手されたポイント:{selectedUser.applaudedPoint}</p>
         </div>
@@ -218,16 +224,26 @@ export default class Main extends Component {
         <div className = "inputPostForm">
           <form>
             <textarea type="text" onInput={this.onInput} ></textarea>
-            <button onClick={this.addPost} disabled={this.state.disabled}>登録</button>
+            <button onClick={this.addPost} disabled={this.state.disabled}>投稿</button>
           </form>
         </div>
       </div>
 
-      <div>
+      <div className = "post">
+      <h5>投稿</h5>
         <ul>
           {postList.map((post, index) => <li key={index}>
-            投稿内容{post.post}-送信元{post.sender.name}-送信先{post.receiver.name}-日時{post.postTime}-拍手ポイント{post.applause}
-            <button onClick={() => { this.addApplause(index) }} disabled={post.applauseDisabled} >拍手</button>
+            <p className = "postpost">投稿内容 : {post.post}</p>
+            <p data-tip={post.applause} data-for='global' className = "postpoint">
+              拍手ポイント{post.applauseSum}
+              <button data-tip={post.applause} data-for='global' onClick={() => { this.addApplause(index) }} disabled={post.applauseDisabled} >拍手</button>
+            </p>
+            <p className = "postdatea">
+              送信元 :  {post.sender.name}<br></br>
+              送信先 :  {post.receiver.name}<br></br>
+              日時 :  {post.postTime}<br></br>
+            </p>
+            <ReactTooltip id='global'  aria-haspopup = 'true' getContent={(dataTip) => `拍手してくれた人  ${dataTip}`}/>
           </li>)}
         </ul>
       </div>

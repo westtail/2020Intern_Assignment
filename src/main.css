@@ -1,17 +1,39 @@
 .main{
     text-align:center;
 }
+.user {
+    float: left;
+}
 .userImage{
-    display: inline-block;
+    float: left;
 }
 .userParameter{
-    display: inline-block;
+    float: left;
 
 }
-
+.sendUser{
+    float: left;
+}
 .sendUserImagee {
     display: inline-block;
 }
 .inputPostForm {
+    display: inline-block;
+}
+
+.post{
+    float: left;
+    
+}
+.postpost{
+    width:150px;
+    display: inline-block;
+}
+
+.postpoint{
+    display: inline-block;
+}
+
+.postdatea{
     display: inline-block;
 }
